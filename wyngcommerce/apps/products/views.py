@@ -3,26 +3,38 @@ from django.http import HttpResponse, JsonResponse
 # from django.json
 
 # Create your views here.
-from apps.products.models import ProductMaster
+from apps.products.models import ProductMaster, ProductAttribute
 import pandas as pd
 from django.db import transaction
 
 import time
 
+attr_header = ['Style Code', 'Colour code', 'Colour   ', 'Size', 'Garment Type', 'Fabric Pattern Detail', 'Age', 'Toon Lable', 'Fabric content', 'Gsm']
 
 def blah(request):
     # import ipdb; ipdb.set_trace()
-    file_path = '/Users/anubhavsingh/Downloads/FAQ Files/Inputs/Product Master.xlsx'
-    for i in range(25):
+    file_path = '/Users/govindsharma/Downloads/FAQ Files/Inputs/Product Master.xlsx'
+    for i in range(1):
         df = pd.read_excel(file_path)
         for index, row in df.iterrows():
-            ProductMaster.objects.create(
+            x = ProductMaster.objects.create(
                 sku=row['EANCode'],
                 brand=row['Brand'],
                 department=row['Department'],
                 product_name=row['Product Full Name'],
                 mrp=row['Online MRP '],
-                selling_price=row['Online MRP '])
+                selling_price=row['Salesprice'],
+                purchase_unit=row['Purchase Unit'],
+                seasons_collection=row['Market Division name'])
+
+            for attr in attr_header:
+                ProductAttribute.objects.create(
+                        attr_name=attr,
+                        attr_type='',
+                        attr_value=row[attr],
+                        product=x
+                    )
+
     return HttpResponse("ho gya")
 
 
